@@ -1,16 +1,16 @@
-if(!file.exists("database.sqlite")){
+if(!file.exists("/home/ratanond/prototype.db")){
   stop("Database does not exist!")
 }
 
-db = dbConnect(SQLite(), dbname = "database.sqlite")
+db = dbConnect(SQLite(), dbname = "/home/ratanond/prototype.db")
 writeLines("Starting Sparse Canonical Correlation Analysis")
 
 while(TRUE) {
-res <- dbGetQuery(db, "SELECT * from ccajobs where (status=='Incomplete')")
+res <- dbGetQuery(db, "SELECT * from ccajobsss where (status=='Incomplete')")
 
 if(nrow(res) > 0){
 
-row <- dbGetQuery(db, "SELECT name, project, rand, id from ccajobs where (status=='Incomplete') limit 1")
+row <- dbGetQuery(db, "SELECT name, project, rand, id from ccajobsss where (status=='Incomplete') limit 1")
     #args = c(row[1,1],row[1,2])
     randname = paste(row[1,3],row[1,4], sep="")
     writeLines(paste("Processing job",randname,sep=": "))
@@ -22,7 +22,7 @@ result <- tryCatch({
 ######## For Microbiota OTU ###########
 #######################################
 
-microBiomeSampFileNames = read.table("ccauploads/microbiota/sample_filenames.csv", 
+microBiomeSampFileNames = read.table("/home/ratanond/Desktop/Thesis/Prototype/app/microbiota/sample_filenames.csv", 
                                      stringsAsFactors=FALSE, sep=',',
                                      comment.char="%", quote='"',
                                      header=TRUE) 
@@ -31,7 +31,7 @@ microBiomeSampFileNames = read.table("ccauploads/microbiota/sample_filenames.csv
 microBiomeSampList = NULL
 for(f in 1:length(microBiomeSampFileNames$filename)){
   microBiomeSampList[[f]] = 
-    read.table(paste("ccauploads/microbiota/",
+    read.table(paste("/home/ratanond/Desktop/Thesis/Prototype/app/microbiota/",
                      microBiomeSampFileNames$filename[f], sep=""), 
                stringsAsFactors=TRUE, sep='\t',
                comment.char="%", quote='"',
@@ -140,7 +140,7 @@ seedLev2TestBox
 ####### For Microarray ########
 ###############################
 
-iddoSampPheno = read.table("ccauploads/microarray/file_names.csv", stringsAsFactors=FALSE,
+iddoSampPheno = read.table("/home/ratanond/Desktop/Thesis/Prototype/app/microarray/file_names.csv", stringsAsFactors=FALSE,
                            sep=',', comment.char="#", header=TRUE)
 iddoSampPheno[1,3] = 4 ## Fix a typo
 
@@ -153,7 +153,7 @@ iddoSampFlags = NULL
 
 for(i in iddoSampPheno$filename){
   iddoSample =
-    read.table(paste("ccauploads/microarray/", i, sep=''),
+    read.table(paste("/home/ratanond/Desktop/Thesis/Prototype/app/microarray/", i, sep=''),
                stringsAsFactors=FALSE, sep='\t', comment.char="#", quote='"',
                skip=7, nrows=54359, header=TRUE, fill=TRUE)
   ## One sample
@@ -297,7 +297,7 @@ geneExpNormBox
 
 ### Immunology ###
 
-wtf = read.table("ccauploads/immunology/PANTHER_BP.txt", sep = '\t', header = TRUE,
+wtf = read.table("/home/ratanond/Desktop/Thesis/Prototype/app/immunology/PANTHER_BP.txt", sep = '\t', header = TRUE,
                  stringsAsFactors = FALSE)
 # this is the group we're going to work with
 
@@ -337,7 +337,7 @@ immunGenes1 = breakList
 
 
 ## ROBB JENIFER IMMUNITY LIST
-immunGenes2 = read.table("ccauploads/immunology/robbs_imunology_genes.csv", sep=',',
+immunGenes2 = read.table("/home/ratanond/Desktop/Thesis/Prototype/app/immunology/robbs_imunology_genes.csv", sep=',',
                          header=TRUE, skip=0, comment.char = "#",
                          stringsAsFactors=FALSE)
 
@@ -348,7 +348,7 @@ immunGenes2 = immunGenes2$Official.Gene.Name[immunGenes2$codelink == 1]
 
 ## LAST ROBB JENIFER IMMUNITY LIST (SECOND LIST) 
 ## here, we're adding the third list from Robb/Jennifer
-immunGenes3 = read.table("ccauploads/immunology/robbs_imunology_genes_TWO_from_jennifer.csv",
+immunGenes3 = read.table("/home/ratanond/Desktop/Thesis/Prototype/app/immunology/robbs_imunology_genes_TWO_from_jennifer.csv",
                          sep=',', header=T, skip=0, comment.char = "#",
                          stringsAsFactors=FALSE)
 
@@ -431,20 +431,20 @@ myCCAPlot = function(x = U1, y = U2, col = V1, shape = type, data = ccaImmunScor
 }
 
 ## Write output files (1 csv + 2 png)
-png(file.path("app/static/ccaresults",paste(randname,"SeedLevel2_Scores", sep="")),bg="transparent")
-p = myCCAPlot()
-dev.off
-png(file.path("app/static/ccaresults",paste(randname,"Immunology_Scores", sep="")),bg="transparent")
-p = myCCAPlot(V1, V2, U1, xyName = "Immunology", coloName = "Seedlevel2")
-dev.off
+pdf(file.path("/home/ratanond/Desktop/Thesis/Prototype/app/ccaresults",paste(randname,"SeedLevel2_Scores.pdf", sep="")),bg="transparent")
+myCCAPlot()
+dev.off()
+pdf(file.path("/home/ratanond/Desktop/Thesis/Prototype/app/ccaresults",paste(randname,"Immunology_Scores.pdf", sep="")),bg="transparent")
+myCCAPlot(V1, V2, U1, xyName = "Immunology", coloName = "Seedlevel2")
+dev.off()
 
-outfile = file.path("app/static/ccaresults",  ## directory is on your side
+outfile = file.path("/home/ratanond/Desktop/Thesis/Prototype/app/ccaresults",  ## directory is on your side
      	          paste(randname,"-", "ccaImmunScores", ".csv",sep=""))
 write.csv(x = ccaImmunScores, file = outfile)
 
-dbSendQuery(conn = db, sprintf("update dejobs set status='Complete' where rand='%s'",row[1,3]))
+dbSendQuery(conn = db, sprintf("update ccajobsss set status='Complete' where rand='%s'",row[1,3]))
 }, error = function(err) {
-	dbSendQuery(conn = db, sprintf("update ccajobs set status='Errored' where rand='%s'",row[1,3]))
+	dbSendQuery(conn = db, sprintf("update ccajobsss set status='Errored' where rand='%s'",row[1,3]))
 
 })
 

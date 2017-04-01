@@ -39,9 +39,9 @@ def save_submission(query, args):
 @app.route('/importcca', methods= ['POST'])
 def import_cca():
 	get_db().execute("CREATE TABLE IF NOT EXISTS ccajobsss(status TEXT, name TEXT, email TEXT, project TEXT, description TEXT,rand TEXT, id integer primary key autoincrement)")
-	microbiota = request.files.getlist("file[]")	    
-	microarray = request.files.getlist("file[]")
-	immunology = request.files.getlist("file[]")
+	microbiota = request.files.getlist("file1[]")	    
+	microarray = request.files.getlist("file2[]")
+	immunology = request.files.getlist("file3[]")
 	#microarray_filenames = request.files['microarray_filenames']    
 	#name = request.form.get('name')
 	#email = request.form.get('email')
