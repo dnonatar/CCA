@@ -1,57 +1,78 @@
 # Both data must have the same number of samples
 
-microb = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Arghavan/MetaSample2/samples.txt")
-microb = as.matrix(microb)
-microb <- microb[,-1]
-microb_rows = dim(microb)[1]/2   # divide by two to choose only the first class
-microb = microb[1:microb_rows,] 
-sd <- apply(microb,2,sd)
-microb <- microb[,which(sd!=0)]  # choose only OTUs with non-zero standard deviation
-#head(t(microb))
+gaussian <- read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/myparams_ma_trn.txt",sep = ",")
+gaussian <- as.matrix(gaussian)
+gaussian_rows <- dim(gaussian)[1]/2  
+gaussian <- gaussian[1:gaussian_rows,1:3] # try with 3 genes
 
-rnaseq = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/myparams_trn.txt",sep = ",")
-rnaseq = as.matrix(rnaseq)
-rnaseq_rows = dim(rnaseq)[1]/2  
-rnaseq = rnaseq[1:rnaseq_rows,1:8]  # try with 8 genes
-#rnaseq = rnaseq[,1:150]
-#head(t(rnaseq))
+# choose OTU that has the highest mean
+# y is y_max without the zeros
+OTU_max <- which.max(apply(microb,2,mean))
+OTU_max_2 <- which.max(apply(microb[,-142],2,mean))
+microb <- microb[,c(142,147)]        # try with 2 OTUs
+y_max <- microb[,which.max(apply(microb,2,mean))]
+y <- y_max[y_max>0]
 
-gaussian = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/easyparams_ma_trn.txt",sep = ",")
-gaussian = as.matrix(gaussian)
-gaussian_rows = dim(rnaseq)[1]/2  
-gaussian = rnaseq[1:rnaseq_rows,]
-gaussian = rnaseq[,1:150]
+# choose genes from the same block (block size = 5)
+gaussian_block <- gaussian[,1:2]
+x_all_1 <- gaussian_block[,1]
+x_all_2 <- gaussian_block[,2]
+x1 <- x_all_1[which(y>0)]
+x2 <- x_all_2[which(y>0)]
 
-y <- microb[,which.max(apply(microb[-1,],2,mean))]
-y <- y[y>0]
-x <- gaussian[,2]
-x <- x[which(y>0)]
+model <- lm(y~x1+x2)
+summary(model)
+intercept <- model$coefficients[1]
+slope1 <- model$coefficients[2]
+slope2 <- model$coefficients[3]
 
-plot(x,y, xlab = "microb", ylab = "gaussian")
-lines(lm(y~x))
+#xx <- -1:1
+#yy <- slope*xx+intercept
+#plot(x,y, xlab = "gaussian", ylab = "microb")
+#lines(xx,yy,type = "l")
+
+#x_adjust <- x[order(x)]
+#y_adjust <- slope1*x1+slope2*x2+intercept
+#plot(x_adjust,y_adjust, xlab = "gaussian", ylab = "microb")
+#lines(xx,yy,type = "l")
+
+y_new <- y_max
+
+for (i in 1:length(y_new)) {
+  if (y_new[i]>0) {
+    y_new[i]<- slope1*x_all_1[i]+slope2*x_all_2[i]+intercept
+  }
+}
+
+microb_new <- microb
+microb_new[,1] <- y_new
+
 
 library(PMA)
 set.seed(1105)
-ccaPerm_old = CCA.permute(x = microb, z = rnaseq,
+ccaPerm = CCA.permute(x = microb_new, z = rnaseq,
                            typex = "standard", typez = "standard", 
                            nperms = 30, niter = 5, standardize = T)
-penXtemp = ccaPerm_old$bestpenaltyx
-penZtemp = ccaPerm_old$bestpenaltyz
-ccaRslt_old = CCA(x = microb, z = rnaseq,
+penXtemp = ccaPerm$bestpenaltyx
+penZtemp = ccaPerm$bestpenaltyz
+ccaRslt = CCA(x = microb_new, z = rnaseq,
                    typex = "standard", typez = "standard",
                    penaltyx = penXtemp, penaltyz = penZtemp,
                    K = 2, niter = 5, standardize = T)
-sum(ccaRslt_old$u != 0)
-sum(ccaRslt_old$v != 0)
+sum(ccaRslt$u != 0)
+sum(ccaRslt$v != 0)
 
-ccaScoreU_old = microb %*% ccaRslt_old$u
-ccaScoreV_old = rnaseq %*% ccaRslt_old$v
-ccaScores_old = cbind(ccaScoreU_old, ccaScoreV_old)
-colnames(ccaScores_old) = c("U1", "U2", "V1", "V2")
-ccaScores_old = as.data.frame(ccaScores_old)
+ccaScoreU = microb_new %*% ccaRslt$u
+ccaScoreV = rnaseq %*% ccaRslt$v
+ccaScores = cbind(ccaScoreU, ccaScoreV)
+colnames(ccaScores) = c("U1", "U2", "V1", "V2")
+ccaScores = as.data.frame(ccaScores)
 #number of each type should be flexible
-ccaScores_old$type = c(rep("class 1", 17), rep("class 2", 17))
+ccaScores$type = c(rep("class 1", 17), rep("class 2", 17))
 
+# find positions of the top 5 absolute values for U1
+match(sort(abs(ccaRslt$u),decreasing = T)[1:5],abs(ccaRslt$u))
+match(sort(abs(ccaRslt_old$u),decreasing = T)[1:5],abs(ccaRslt_old$u))
 
 library(ggplot2)
 myCCAPlot = function(x = U1, y = U2, col = V1, shape = type, data = ccaScores,
@@ -97,4 +118,5 @@ myCCAPlot = function(x = U1, y = U2, col = V1, shape = type, data = ccaScores,
 }
 myCCAPlot()
 myCCAPlot(V1, V2, U1, xyName = "rnaseq", coloName = "microbial")
+
 
