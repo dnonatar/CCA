@@ -13,9 +13,9 @@ microb <- microb[,c(417,541,42)] # two OTUs with min numbers of zeros
 gaussian <- read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/myparams_ma_trn.txt",sep = ",")
 gaussian <- as.matrix(gaussian)
 gaussian_rows <- dim(gaussian)[1]/2  
-gaussian <- gaussian[1:gaussian_rows,1:10] # try with 10 genes
+gaussian <- gaussian[1:gaussian_rows,1:100]
 
-y <- microb[,1:3]
+y <- microb[,1:2]
 x <- gaussian
 x1 <- gaussian[,1]
 x2 <- gaussian[,2]
@@ -35,21 +35,25 @@ microb1[,1] <-predict(lm(y~x1,data = data, subset = y>0),newdata = as.data.frame
 microb2[,1] <-predict(lm(y~x1+x2,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 microb3[,1] <-predict(lm(y~x1+x2+x3,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 microb4[,1] <-predict(lm(y~x1+x2+x3+x4,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb5[,1:2] <-predict(lm(y~x1+x2+x3+x4+x5,data = data, subset = y[,1]>0&y[,2]>0),newdata = as.data.frame(gaussian))
+microb5[,1] <-predict(lm(y~x1+x2+x3+x4+x5,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 microb6[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb7[,1:2] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7,data = data, subset = y[,1]>0&y[,2]>0),newdata = as.data.frame(gaussian))
+microb7[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 microb8[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7+x8,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 microb9[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7+x8+x9,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb10[,1:2] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7+x8+x9+x10,data = data, subset = y[,1]>0&y[,2]>0),newdata = as.data.frame(gaussian))
+microb10[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7+x8+x9+x10,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 
 
-for(k in 1:k) {
-  for (n in 1:n){
-    m <- lm(y[])
-    
-    
+####  for high number of n, use for-loop instead
+cor_g<-numeric(dim(gaussian)[2])
+cor_rna<-numeric(dim(rnaseq)[2])
+  for (n in 1:100){
+    new_microb <- microb
+    m <- lm(y~gaussian[,1:n],subset = y[,1]>0&y[,2]>0)
+    new_microb[,1:2] <- predict(m, newdata=as.data.frame(gaussian))
+    cor_g[n] <- myCCA(new_microb, gaussian)
+    cor_rna[n] <- myCCA(new_microb,rnaseq)
   }
-}
+
 
 
 library(PMA)
@@ -58,15 +62,15 @@ myCCA <- function(microb_new,gaussian) {
 set.seed(1105)
 ccaPerm = CCA.permute(x = microb_new, z = gaussian,
                       typex = "standard", typez = "standard", 
-                      nperms = 30, niter = 5, standardize = T)
+                      nperms = 30, niter = 5, standardize = T,trace = F)
 penXtemp = ccaPerm$bestpenaltyx
 penZtemp = ccaPerm$bestpenaltyz
 ccaRslt = CCA(x = microb_new, z = gaussian,
               typex = "standard", typez = "standard",
               penaltyx = penXtemp, penaltyz = penZtemp,
               K = 2, niter = 5, standardize = T)
-sum(ccaRslt$u != 0)
-sum(ccaRslt$v != 0)
+#sum(ccaRslt$u != 0)
+#sum(ccaRslt$v != 0)
 
 ccaScoreU = microb_new %*% ccaRslt$u
 ccaScoreV = gaussian %*% ccaRslt$v
@@ -76,5 +80,8 @@ ccaScores = as.data.frame(ccaScores)
 return(cor(ccaScores$U1,ccaScores$V1))
 }
 
+
+gaussian1 <- c(1,0.9976803,0.9804564,0.9892245,0.9886788,0.991636,0.9733787,0.975309,0.9553863,0.907542)
+n <- c(1,2,3,4,5,6,7,8,9,10)
 
 
