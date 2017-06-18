@@ -1,6 +1,6 @@
 # Both data must have the same number of samples
 
-gaussian <- read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/myparams_ma_trn.txt",sep = ",")
+gaussian = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/params_sb_low_ma_trn.txt",sep = ",")
 gaussian <- as.matrix(gaussian)
 gaussian_rows <- dim(gaussian)[1]/2  
 gaussian <- gaussian[1:gaussian_rows,1:3] # try with 3 genes

@@ -1,18 +1,18 @@
 library(PMA)
 set.seed(1105)
-ccaPerm = CCA.permute(x = microb, z = gaussian,
+ccaPerm = CCA.permute(x = microb3, z = gaussian,
                       typex = "standard", typez = "standard", 
                       nperms = 30, niter = 5, standardize = T, trace = F)
 penXtemp = ccaPerm$bestpenaltyx
 penZtemp = ccaPerm$bestpenaltyz
-ccaRslt = CCA(x = microb, z = gaussian,
+ccaRslt = CCA(x = microb3, z = gaussian,
               typex = "standard", typez = "standard",
               penaltyx = penXtemp, penaltyz = penZtemp,
               K = 2, niter = 5, standardize = T)
 sum(ccaRslt$u != 0)
 sum(ccaRslt$v != 0)
 
-ccaScoreU = microb %*% ccaRslt$u
+ccaScoreU = microb3 %*% ccaRslt$u
 ccaScoreV = gaussian %*% ccaRslt$v
 ccaScores = cbind(ccaScoreU, ccaScoreV)
 colnames(ccaScores) = c("U1", "U2", "V1", "V2")
@@ -23,7 +23,7 @@ ccaScores$type = c(rep("class 1", 17), rep("class 2", 17))
 U1_cor <- function(g) {return(cor(ccaScores$U1,g))}
 V1_cor <- function(g) {return(cor(ccaScores$V1,g))}
 gaussian_cor <- apply(gaussian,2,U1_cor)
-microb_cor <- apply(microb,2,V1_cor)
+microb3_cor <- apply(microb3,2,V1_cor)
 
-which.max(abs(gaussian_cor))
-which.max(abs(microb_cor))
+gaussian_cor
+microb3_cor

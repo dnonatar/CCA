@@ -9,14 +9,14 @@ sd <- apply(microb,2,sd)
 microb <- microb[,which(sd!=0)]  # choose only OTUs with non-zero standard deviation
 #head(t(microb))
 
-rnaseq = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/myparams_trn.txt",sep = ",")
+rnaseq = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/params_sb_high_trn.txt",sep = ",")
 rnaseq = as.matrix(rnaseq)
 rnaseq_rows = dim(rnaseq)[1]/2  
-rnaseq = rnaseq[1:rnaseq_rows,1:100]  # try with 3 genes
+rnaseq = rnaseq[1:rnaseq_rows,1:600]  
 #rnaseq = rnaseq[,1:150]
 #head(t(rnaseq))
 
-gaussian = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/easyparams_ma_trn.txt",sep = ",")
+gaussian = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/params_sb_low_ma_trn.txt",sep = ",")
 gaussian = as.matrix(gaussian)
 gaussian_rows = dim(rnaseq)[1]/2  
 gaussian = rnaseq[1:rnaseq_rows,]
