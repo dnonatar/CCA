@@ -10,7 +10,7 @@ Please follow the instructions below to perform your analysis.</header><!-- One 
 </header>
 <p>Create two files, either a txt or csv. Each of them contains a table with rows as samples and columns and features. Note that they must have the same number of samples, but can have different numbers of features.</p>
 <p><span style="text-decoration: underline;">Example</span></p>
-<table style="width: 100%; font-size: 10pt;">
+<table style="width: 377px; font-size: 10pt; height: 78px;">
 <tbody>
 <tr>
 <td style="vertical-align: middle;" width="80">&nbsp;</td>
@@ -52,16 +52,29 @@ Please follow the instructions below to perform your analysis.</header><!-- One 
 </header>
 <div class="content"><form action="importcca" enctype="multipart/form-data" method="post">
 <div class="row 50%">
+<div class="6u 12u(mobile)"><input name="name" type="text" placeholder="Name" /></div>
+<div class="6u 12u(mobile)"><input name="email" type="text" placeholder="Email" /></div>
+</div>
+<div class="row 50%">
+<div class="12u"><input name="project" type="text" placeholder="Project Name" /></div>
+</div>
+<div class="row 50%">
+<div class="12u"><textarea name="description" rows="4" placeholder="Project Description"></textarea></div>
+</div>
+<div class="row 50%">
 <div class="11u">
-<div style="float: right;"><label for="f1">Add Input1</label> <input id="f1" multiple="multiple" name="file1" required="" type="file" /></div>
-<div style="float: right;"><label for="f2">Add Input2</label> <input id="f2" multiple="multiple" name="file2" required="" type="file" /></div>
+<div style="float: right;"><label for="f1">Add Input1</label> <input id="f1" name="file1" type="file" /></div>
+<div style="float: right;"><label for="f2">Add Input2</label> <input id="f2" name="file2" type="file" /></div>
 </div>
 </div>
+<br />
+<div class="row 50%" style="display: inline-block;"><br />
 <div class="row">
 <div class="12u">
 <ul class="buttons">
 <li><input class="special" type="submit" value="Submit" /></li>
 </ul>
+</div>
 </div>
 </div>
 </form></div>

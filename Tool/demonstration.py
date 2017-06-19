@@ -2,6 +2,8 @@ from flask import render_template, request, g, send_from_directory, Flask
 from werkzeug import secure_filename
 #from .forms import LoginForm
 import os,sqlite3,string,random,csv,requests,glob,smtplib,re
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
@@ -36,17 +38,43 @@ def save_submission(query, args):
 	c.close()
 	return id
 
+def notify(name, email, project, description, id):
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "CTEHR: Thank you for your submission!"
+	msg['From']    = "CTEHR <CTEHR@cvm.tamu.edu>"
+	msg['To']      = email
+
+	
+	jurl = "ccajobs"
+	
+	#html = "<p><em>Your submission ID is: <strong>"+id+"</strong>. Please use the following address to monitor the status of the job.</p><p></em><a href='http://sequencer.tamu.edu/compute/"+jurl+"?id="+id+"'>http://sequencer.tamu.edu/compute/"+jurl+"?id="+id+"</a></p><p>Submission details: </p><p><ul><li>Job Type: "+type+"</li><li>Name: "+name+"</li><li>Project: "+project+"</li><li>Description: "+description+"</li><ul></p>"
+	#con = MIMEText(html, 'html')
+
+	#username = 'sagarmehta89yhoo.com'
+	#password = 'yZslfp-MJHiKlTfZE_0JpA'
+
+	#msg.attach(con)
+	#s = smtplib.SMTP('smtp.mandrillapp.com', 587)
+	#s.login(username, password)
+	#s.sendmail(msg['From'], msg['To'], msg.as_string())
+	#s.quit()
+
+
+@app.route('/ccajobs')
+def ccajobs():
+    ccajobs = get_db().execute("SELECT status,name,email,project FROM ccajobsss WHERE id = ?", [request.args.get('id')])
+    return render_template('ccajobs.html', rows=ccajobs.fetchall(), id=request.args.get('id'))
+
 @app.route('/importcca', methods= ['POST'])
 def import_cca():
 	get_db().execute("CREATE TABLE IF NOT EXISTS ccajobsss(status TEXT, name TEXT, email TEXT, project TEXT, description TEXT,rand TEXT, id integer primary key autoincrement)")
 	input1 = request.files['file1']	    
 	input2 = request.files['file2']
 	
-	#microarray_filenames = request.files['microarray_filenames']    
-	#name = request.form.get('name')
-	#email = request.form.get('email')
-	#project = request.form.get('project')
-	#description = request.form.get('description')
+	name = request.form.get('name')
+	email = request.form.get('email')
+	project = request.form.get('project')
+	description = request.form.get('description')
 
 	if input1 and allowed_file(input1.filename):
 	   dir1 = "/home/ratanond/Desktop/Masters_Project/CCA/Tool/Input1/"
@@ -62,9 +90,9 @@ def import_cca():
 	    
 
 	
-	lid = save_submission("INSERT INTO ccajobsss (status, name, email, project, description, rand) VALUES (?,?,?,?,?,?)", ["Incomplete", "name", "email", "project", "description", "abc"]);
+	lid = save_submission("INSERT INTO ccajobsss (status, name, email, project, description, rand) VALUES (?,?,?,?,?,?)", ["Incomplete", name, email, project, description, "abc"]);
 	
-	
+	notify(str(name), email, str(project), str(description), id)
 
 	return render_template('job_success.html')
 
@@ -73,6 +101,8 @@ app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
