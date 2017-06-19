@@ -5,7 +5,7 @@ import os,sqlite3,string,random,csv,requests,glob,smtplib,re
 
 app = Flask(__name__)
 
-DATABASE = "/home/ratanond/prototype.db" 
+DATABASE = "/home/ratanond/Desktop/Masters_Project/CCA/Tool/tool.db" 
 
 def connect_to_database():
     return sqlite3.connect(DATABASE)
@@ -19,7 +19,7 @@ def get_db():
 
 @app.route('/')
 def uploadcca():
-    return render_template("uploadcca.html")
+    return render_template("upload_demonstr.html")
 
 
 @app.teardown_appcontext
@@ -39,34 +39,26 @@ def save_submission(query, args):
 @app.route('/importcca', methods= ['POST'])
 def import_cca():
 	get_db().execute("CREATE TABLE IF NOT EXISTS ccajobsss(status TEXT, name TEXT, email TEXT, project TEXT, description TEXT,rand TEXT, id integer primary key autoincrement)")
-	microbiota = request.files.getlist("file1[]")	    
-	microarray = request.files.getlist("file2[]")
-	immunology = request.files.getlist("file3[]")
+	input1 = request.files['file1']	    
+	input2 = request.files['file2']
+	
 	#microarray_filenames = request.files['microarray_filenames']    
 	#name = request.form.get('name')
 	#email = request.form.get('email')
 	#project = request.form.get('project')
 	#description = request.form.get('description')
 
-	for file in microbiota:
-	    if file and allowed_file(file.filename):
-		dir = "/home/ratanond/Desktop/Thesis/Prototype/app/microbiota/"
-		filename = secure_filename(file.filename)
-		file.save(os.path.join(dir, filename))
+	if input1 and allowed_file(input1.filename):
+	   dir1 = "/home/ratanond/Desktop/Masters_Project/CCA/Tool/Input1/"
+	   filename = secure_filename(input1.filename)
+	   input1.save(os.path.join(dir1, filename))
 	    
 
-	for file in microarray:
-	    if file and allowed_file(file.filename):
-		dir = "/home/ratanond/Desktop/Thesis/Prototype/app/microarray/"
-		filename = secure_filename(file.filename)
-		file.save(os.path.join(dir, filename))
-	    
+	if file and allowed_file(input2.filename):
+	   dir2 = "/home/ratanond/Desktop/Masters_Project/CCA/Tool/Input2/"
+	   filename = secure_filename(input2.filename)
+	   input2.save(os.path.join(dir2, filename))
 
-	for file in immunology:
-	    if file and allowed_file(file.filename):
-		dir = "/home/ratanond/Desktop/Thesis/Prototype/app/immunology/"
-		filename = secure_filename(file.filename)
-		file.save(os.path.join(dir, filename))
 	    
 
 	
