@@ -1,9 +1,11 @@
-from flask import render_template, request, g, send_from_directory, Flask
+from flask import render_template, request, g, send_from_directory, Flask, send_file
 from werkzeug import secure_filename
 #from .forms import LoginForm
 import os,sqlite3,string,random,csv,requests,glob,smtplib,re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+
 
 app = Flask(__name__)
 
@@ -58,6 +60,14 @@ def notify(name, email, project, description, id):
 	#s.login(username, password)
 	#s.sendmail(msg['From'], msg['To'], msg.as_string())
 	#s.quit()
+
+@app.route('/return-file/')
+def return_file():
+    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/azx3Scores1.pdf')
+
+@app.route('/return-file-2/')
+def return_file_2():
+    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/azx3Scores2.pdf')
 
 
 @app.route('/ccajobs')
