@@ -63,11 +63,19 @@ def notify(name, email, project, description, id):
 
 @app.route('/return-file/')
 def return_file():
-    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/azx3Scores1.pdf')
+    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/azxScores1.pdf')
 
 @app.route('/return-file-2/')
 def return_file_2():
-    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/azx3Scores2.pdf')
+    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/azxScores2.pdf')
+
+@app.route('/return-file-3/')
+def return_file_3():
+    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/Scores.csv')
+
+@app.route('/return-file-4/')
+def return_file_4():
+    return send_file('/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults/TopList.csv')
 
 
 @app.route('/ccajobs')

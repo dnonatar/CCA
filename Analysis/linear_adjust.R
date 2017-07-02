@@ -26,15 +26,15 @@ intercept <- model$coefficients[1]
 slope1 <- model$coefficients[2]
 slope2 <- model$coefficients[3]
 
-#xx <- -1:1
-#yy <- slope*xx+intercept
-#plot(x,y, xlab = "gaussian", ylab = "microb")
-#lines(xx,yy,type = "l")
+xx <- -1:1
+yy <- slope*xx+intercept
+plot(x,y, xlab = "gaussian", ylab = "microb")
+lines(xx,yy,type = "l")
 
-#x_adjust <- x[order(x)]
-#y_adjust <- slope1*x1+slope2*x2+intercept
-#plot(x_adjust,y_adjust, xlab = "gaussian", ylab = "microb")
-#lines(xx,yy,type = "l")
+x_adjust <- x[order(x)]
+y_adjust <- slope1*x1+slope2*x2+intercept
+plot(x_adjust,y_adjust, xlab = "gaussian", ylab = "microb")
+lines(xx,yy,type = "l")
 
 #y_new <- y_max
 y_new <- microb[,1]
