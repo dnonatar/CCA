@@ -1,26 +1,19 @@
   # Both data must have the same number of samples
+file1_name= strsplit(args[1],'[.]')[[1]][1]
+file2_name= strsplit(args[2],'[.]')[[1]][1]
 
-microb = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Arghavan/MetaSample2/samples.txt")
-microb = as.matrix(microb)
-microb <- microb[,-1]
-microb_rows = dim(microb)[1]/2   # divide by two to choose only the first class
-microb = microb[1:microb_rows,] 
-sd <- apply(microb,2,sd)
-microb <- microb[,which(sd!=0)]  # choose only OTUs with non-zero standard deviation
+microb <- read.table(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment/",args[1]), sep = ',')
+microb <- microb[-1,-1]
+microb <- as.matrix(apply(microb,2,as.numeric))
+sd1 <- apply(microb,2,sd)
+microb <- microb[,which(sd1 != 0)]  # choose only OTUs with non-zero standard deviation
 #head(t(microb))
 
-rnaseq = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/params_sb_high_1_trn.txt",sep = ",")
-rnaseq = as.matrix(rnaseq)
-rnaseq_rows = dim(rnaseq)[1]/2  
-rnaseq = rnaseq[1:rnaseq_rows,1:600]  
-#rnaseq = rnaseq[,1:150]
-#head(t(rnaseq))
-
-gaussian = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Eunji/rnaseq_cls/rnaseq_cls/out/params_sb_high_1_ma_trn.txt",sep = ",")
-gaussian = as.matrix(gaussian)
-gaussian_rows = dim(rnaseq)[1]/2  
-gaussian = rnaseq[1:rnaseq_rows,]
-gaussian = rnaseq[,1:150]
+rnaseq <- read.table(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment/",args[2]), sep = ',')
+rnaseq <- rnaseq[-1,-1]
+rnaseq <- as.matrix(apply(rnaseq,2,as.numeric))
+sd2 <- apply(rnaseq,2,sd)
+microb <- rnaseq[,which(sd2 != 0)]
 
 library(PMA)
 set.seed(1105)
@@ -42,12 +35,13 @@ ccaScores_old = cbind(ccaScoreU_old, ccaScoreV_old)
 colnames(ccaScores_old) = c("U1", "U2", "V1", "V2")
 ccaScores_old = as.data.frame(ccaScores_old)
 #number of each type should be flexible
-ccaScores_old$type = c(rep("class 1", 17), rep("class 2", 17))
+len = dim(microb)[1]
+ccaScores_old$type = c(rep("class 1", len/2), rep("class 2", len/2))
 
 
 library(ggplot2)
 myCCAPlot = function(x = U1, y = U2, col = V1, shape = type, data = ccaScores_old,
-                     xyName = "microbial", coloName = "rnaseq",
+                     xyName = file1_name, coloName = file2_name,
                      textVjust = -1.0, elliLev = 0.6, ...){
   jitterPara = list(...)
   if(!"height" %in% names(jitterPara)){
@@ -91,13 +85,14 @@ myCCAPlot = function(x = U1, y = U2, col = V1, shape = type, data = ccaScores_ol
 
 ## Write output files (1 csv + 2 pdf)
 
-pdf(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults",paste(randname,"Scores1.pdf", sep="")),bg="transparent")
+
+pdf(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment",paste(file1_name,'.pdf', sep="")),bg="transparent")
 myCCAPlot()
 dev.off()
-pdf(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults",paste(randname,"Scores2.pdf", sep="")),bg="transparent")
-myCCAPlot(V1, V2, U1, xyName = "Immunology", coloName = "Seedlevel2")
+pdf(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment",paste(file2_name,'.pdf', sep="")),bg="transparent")
+myCCAPlot(V1, V2, U1, xyName = file2_name, coloName = file1_name)
 dev.off()
 
-outfile = file.path("/home/ratanond/Desktop/Masters_Project/CCA/Tool/ccaresults",  
-                    paste(randname,"-", "ccaImmunScores", ".csv",sep=""))
-#write.csv(x = ccaScores_old, file = outfile)
+outfile = file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment",  
+                    paste("randname","-", "ccaImmunScores", ".csv",sep=""))
+write.csv(x = ccaScores_old, file = outfile)

@@ -1,0 +1,17 @@
+[Unit]
+Description=Sparse Canonical Correlation Analysis service 
+
+[Service]
+ExecStart=/usr/bin/Rscript /opt/CTEHR/scca.R
+Restart=always
+PrivateTmp=yes
+PrivateDevice=yes
+PrivateNetwork=yes
+ProtectSystem=full
+ProtectHome=full
+User=ratanond
+WorkingDirectory=/opt/CTEHR
+
+[Install]
+WantedBy=multi-user.target
+
