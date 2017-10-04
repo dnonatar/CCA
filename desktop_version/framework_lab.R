@@ -1,12 +1,15 @@
+## Check if the database exists
 library('RSQLite')
 if(!file.exists("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment/tool.db")){
   stop("Database does not exist!")
 }
 
+#Connect to the database
 db = dbConnect(SQLite(), dbname = "/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment/tool.db")
 writeLines("Starting Sparse Canonical Correlation Analysis")
 
 while(TRUE) {
+# process incomplete jobs
 res <- dbGetQuery(db, "SELECT * from ccajobs where (status=='Incomplete')")
 if(nrow(res) > 0){
 

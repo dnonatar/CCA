@@ -1,5 +1,3 @@
-## test for the ratio at which the relationship is undetectable
-# gaussian and rnaseq
 
 microb = read.table("/home/ratanond/Desktop/Masters_Project/Synthetic/Arghavan/MetaSample2/samples.txt")
 microb = as.matrix(microb)
@@ -26,15 +24,6 @@ x1 <- gaussian[,1]
 x2 <- gaussian[,2]
 x3 <- gaussian[,3]
 data = data.frame(y,x1,x2,x3)
-#x4 <- gaussian[,4]
-#x5 <- gaussian[,5]
-#x6 <- gaussian[,6]
-#x7 <- gaussian[,7]
-#x8 <- gaussian[,8]
-#x9 <- gaussian[,9]
-#x10 <- gaussian[,10]
-
-#data = data.frame(y,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10)
 
 # For small cases
 microb1<-microb2<-microb3<-microb4<-microb5<-microb6<-microb7<-microb8<-microb9<-microb10<-microb
@@ -42,16 +31,7 @@ microb1[,1] <-predict(lm(y~x1,data = data, subset = y>0),newdata = as.data.frame
 microb2[,1] <-predict(lm(y~x1+x2,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 microb3[,1] <-predict(lm(y~x1+x2+x3,data = data, subset = y>0),newdata = as.data.frame(gaussian))
 
-microb4[,1] <-predict(lm(y~x1+x2+x3+x4,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb5[,1] <-predict(lm(y~x1+x2+x3+x4+x5,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb6[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb7[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb8[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7+x8,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb9[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7+x8+x9,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-microb10[,1] <-predict(lm(y~x1+x2+x3+x4+x5+x6+x7+x8+x9+x10,data = data, subset = y>0),newdata = as.data.frame(gaussian))
-
-
-####  for high number of n, use for-loop instead
+####  for high number of n (large cases), use for-loop instead
 exclude_list = microb[,-c(417,42,125,235,128)]
 include_list = microb[,c(417,42,125,235,128)]
 all_list = cbind(include_list,exclude_list)
@@ -92,7 +72,7 @@ ccaScores = as.data.frame(ccaScores)
 return(cor(ccaScores$U1,ccaScores$V1))
 }
 
-cca_list = numeric(dim(microb)[2])
+gaussian_list = numeric(dim(microb)[2])
 for (i in 2:dim(microb)[2]) {
   cca_list[i] <- myCCA(microb[,1:i],gaussian)
 }
