@@ -2,18 +2,18 @@
 file1_name= strsplit(args[1],'[.]')[[1]][1]
 file2_name= strsplit(args[2],'[.]')[[1]][1]
 
-microb <- read.table(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment/",args[1]), sep = ',')
-microb <- microb[-1,-1]
+microb <- read.table(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment",args[1]), sep = ',')
+microb <- microb[,-1]
 microb <- as.matrix(apply(microb,2,as.numeric))
 sd1 <- apply(microb,2,sd)
 microb <- microb[,which(sd1 != 0)]  # choose only OTUs with non-zero standard deviation
 #head(t(microb))
 
-rnaseq <- read.table(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment/",args[2]), sep = ',')
-rnaseq <- rnaseq[-1,-1]
+rnaseq <- read.table(file.path("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment",args[2]), sep = ',')
+rnaseq <- rnaseq[,-1]
 rnaseq <- as.matrix(apply(rnaseq,2,as.numeric))
 sd2 <- apply(rnaseq,2,sd)
-microb <- rnaseq[,which(sd2 != 0)]
+rnaseq <- rnaseq[,which(sd2 != 0)]
 
 library(PMA)
 set.seed(1105)
@@ -73,8 +73,8 @@ myCCAPlot = function(x = U1, y = U2, col = V1, shape = type, data = ccaScores_ol
     theme(legend.title = element_text(size = 12),
           plot.title = element_text(size = 16, vjust = 2.0, face = "bold"),
           legend.text = element_text(size = 10)) +
-    stat_ellipse(aes(fill = data[,shape]), level = elliLev, alpha = 0.2,
-                 geom = "polygon", linetype = 2) +
+    #stat_ellipse(aes(fill = data[,shape]), level = elliLev, alpha = 0.2,
+                 #geom = "polygon", linetype = 2) +
     scale_fill_discrete(name = "Class",
                         labels = c("class 1", "class 2")) +
     scale_shape_discrete(name = "Class",

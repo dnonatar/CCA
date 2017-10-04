@@ -21,9 +21,9 @@ result <- tryCatch({
 source("/home/ratanond/Desktop/Masters_Project/CCA/Lab_Experiment/CCA_anlys.R", echo = T, print.eval = T)
 #write.csv(x = ccaScores_old, file = outfile)
 
-dbSendQuery(conn = db, sprintf("update ccajobs set status='Complete' where rand='%s'",row[1,5]))
+dbSendQuery(conn = db, sprintf("update ccajobs set status='Complete' where id=%s",row[1,6]))
 }, error = function(err) {
-	dbSendQuery(conn = db, sprintf("update ccajobs set status='Errored' where rand='%s'",row[1,5]))
+	dbSendQuery(conn = db, sprintf("update ccajobs set status='Errored' where id=%s",row[1,6]))
 
 })
 
